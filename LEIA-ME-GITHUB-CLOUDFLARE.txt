@@ -1,0 +1,38 @@
+LUXX STORE AD — PACOTE PARA GITHUB + CLOUDFLARE PAGES
+
+ESTRUTURA (NÃO ALTERE OS NOMES)
+/
+  index.html
+  template.html
+  schema.sql
+  _headers
+  functions/
+    api/
+      data.js
+
+O index.html é o aplicativo financeiro.
+O template.html é a tela do template/nota.
+functions/api/data.js cria o endpoint /api/data usado para sincronização na nuvem.
+schema.sql cria a tabela necessária no banco D1.
+_headers contém cabeçalhos HTTP.
+
+IMPORTANTE: O ZIP NÃO É ENVIADO COMO ZIP PARA O GITHUB.
+Extraia o ZIP antes de enviar. Envie os arquivos extraídos para a raiz do repositório, preservando a pasta functions/api/data.js.
+Se estiver usando o GitHub pelo celular e não conseguir enviar a pasta aninhada, envie os arquivos da raiz primeiro; depois, no repositório, use Add file > Create new file e crie o caminho functions/api/data.js, colando o conteúdo do arquivo data.js. Não coloque data.js na raiz: isso impede a rota /api/data de funcionar.
+
+CLOUDFLARE PAGES
+1. Crie um projeto Pages conectado ao repositório GitHub.
+2. Framework preset: None. Build command: deixe vazio. Build output directory: .
+3. Após publicar, crie um banco D1 no Cloudflare.
+4. No console SQL do D1, execute o conteúdo de schema.sql.
+5. Em Workers & Pages > seu projeto Pages > Settings > Bindings, adicione D1 database binding com Variable name DB e selecione o banco criado.
+6. Salve e faça um novo deploy para o binding entrar em vigor.
+7. Teste https://SEU-SITE.pages.dev/api/data. Antes de dados válidos, a rota pode retornar JSON com dados vazios. Se retornar erro de binding, revise o passo 5.
+8. Configure autenticação/Cloudflare Access antes de guardar dados pessoais reais de clientes.
+
+AVISOS IMPORTANTES
+- Este pacote não contém um ID D1 falso. O banco é ligado no painel do Cloudflare.
+- Sem o banco D1 e o binding DB, o app só salva no armazenamento local do navegador; os dados não serão compartilhados entre aparelhos.
+- A sincronização usa um registro único compartilhado. Teste cuidadosamente em dois aparelhos antes de usar no dia a dia, pois edições simultâneas podem se sobrescrever.
+- Não publique dados reais de clientes em um repositório público. Use repositório privado e autenticação no site.
+- O código foi verificado quanto à sintaxe JavaScript, mas o funcionamento final depende da configuração do Cloudflare e deve ser testado depois do deploy.
