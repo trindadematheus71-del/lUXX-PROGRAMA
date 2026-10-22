@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUXX STORE AD · Template de Nota</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#03050a;color:#eaf6ff;font-family:Inter,Arial,sans-serif}
+body{padding:14px;background-image:radial-gradient(ellipse at 80% 0%,#062b48 0,transparent 35%)}
+.app{max-width:1250px;margin:auto}
+h1{margin:0 0 5px;letter-spacing:-.8px;color:#f2f9ff}.sub{color:#8297ad;margin-bottom:15px}
+.layout{display:grid;grid-template-columns:minmax(300px,1fr) minmax(320px,430px);gap:15px}
+.panel{background:linear-gradient(145deg,#0b1421,#070b12);padding:18px;border:1px solid #172b43;border-radius:16px;box-shadow:0 18px 45px #0005}
+h2{margin:0 0 10px;font-size:20px;color:#eaf6ff}
+h3{margin:16px 0 7px;font-size:15px;color:#8bddff}
+label{display:block;font-size:12px;font-weight:bold;margin:8px 0 4px;color:#b8cce0}
+input,select,textarea,button{width:100%;font:inherit}
+input,select,textarea{padding:10px;background:#050a12;color:#eaf6ff;border:1px solid #203a55;border-radius:8px}
+textarea{min-height:60px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{border:1px solid #1e5479;border-radius:8px;padding:10px;margin-top:7px;cursor:pointer;font-weight:bold;transition:.15s}
+button:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.primary{background:linear-gradient(135deg,#43c4ff,#0877b6);color:#02111d;border-color:#1686bc}.secondary{background:#0b1a2a;color:#cdeeff;border-color:#1d405d}
+.danger{background:#2b121b;color:#ff9fb0;width:auto;padding:7px 10px}
+.smallbtn{width:auto;padding:7px 10px}
+.product,.payment,.catalog-item{border:1px solid #1b344c;border-radius:9px;padding:9px;margin:8px 0;background:#09111c}
+.product-grid{display:grid;grid-template-columns:70px 1fr 90px;gap:6px}
+.payment-grid{display:grid;grid-template-columns:1fr 105px 75px;gap:6px;align-items:end}
+.catalog-grid{display:grid;grid-template-columns:100px 1fr 100px;gap:6px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.note{font-size:12px;color:#8297ad;margin:7px 0}
+.status{font-size:12px;color:#8bddff;min-height:18px;margin-top:8px}
+.remaining{font-weight:bold;padding:10px;border-radius:8px;background:#091b2a;border:1px solid #174568;margin-top:8px;color:#8bddff}
+.preview-area{background:#06101b;border:1px solid #17314a;padding:12px;display:flex;justify-content:center;overflow:auto;border-radius:12px}
+.paper{width:384px;min-width:384px;max-width:384px;background:#fff;padding:16px;color:#000;font-family:"Courier New",monospace;font-size:18px;line-height:1.25;overflow-wrap:anywhere;box-shadow:0 1px 6px #0004}
+.center{text-align:center}.bold{font-weight:bold}
+.shop-receipt-info{font-size:12px;line-height:1.15;font-weight:normal;margin:1px 0;overflow-wrap:anywhere}
+.line{border-top:2px dashed #111;margin:12px 0}
+.prod{margin:9px 0}.prodname{font-weight:bold}.prodbottom{display:flex;justify-content:space-between;gap:5px}
+.total{font-weight:bold;font-size:22px;display:flex;justify-content:space-between}
+.catalog-empty{font-size:12px;color:#777;padding:8px 0}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.paper{margin:auto}}
+@media(max-width:500px){body{padding:7px}.row,.catalog-grid{grid-template-columns:1fr}.payment-grid{grid-template-columns:1fr 100px 70px}}
+
+.logo-preview{max-width:130px;max-height:70px;object-fit:contain;display:block;margin:8px auto}
+.qr-box{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.qr-canvas{background:white;padding:6px;border:1px solid #ddd}
+
+.stock-low{color:#a00;font-weight:bold}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.menu-wrap{position:relative}
+.menu-button{width:auto;min-width:48px;font-size:24px;line-height:1;padding:8px 13px;margin:0}
+.menu-pop{display:none;position:absolute;right:0;top:100%;z-index:20;background:#fff;border:1px solid #1d405d;border-radius:8px;box-shadow:0 5px 18px #0008;min-width:190px;padding:6px;background:#09111c}
+.menu-pop.open{display:block}
+.menu-pop button{margin:2px 0;text-align:left;background:#0b1a2a;color:#cdeeff}
+#productManager{display:none;border:1px solid #ddd;border-radius:8px;padding:12px;margin:10px 0;background:#fafafa}
+.shop-info-grid{display:grid;grid-template-columns:1fr;gap:4px}
+.shop-info-grid input{margin-bottom:3px}
+
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <button type="button" class="secondary" style="width:auto" onclick="location.href='index.html'">← Voltar ao Financeiro</button>
+  <div><h1>Editor de Nota — LUXX STORE AD</h1>
+  <div class="sub">Nota térmica 384 px • estoque integrado • pagamento dividido • JPG pronto para ESC/POS</div></div>
+  <div class="menu-wrap">
+    <button type="button" class="secondary menu-button" aria-label="Abrir menu" onclick="toggleMenu()">⋮</button>
+    <div id="mainMenu" class="menu-pop">
+      <button type="button" onclick="openShopInfo()">🏪 Informações da loja</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+<section class="panel">
+<h2>1. Dados da nota</h2>
+
+<label>Logo da nota (escolha uma imagem)</label>
+<input id="logoFile" type="file" accept="image/*">
+<img id="logoPreview" class="logo-preview" alt="Prévia da logo" hidden>
+<button type="button" class="secondary" onclick="clearLogo()">Remover logo</button>
+<div id="shopInfoPanel" style="display:none;border:1px solid #ddd;border-radius:8px;padding:10px;margin:10px 0;background:#fafafa">
+  <h3>Informações da loja que saem na nota</h3>
+  <div class="shop-info-grid">
+    <label>Endereço</label><input id="lojaEndereco" placeholder="Endereço da loja">
+    <label>Telefone / WhatsApp</label><input id="lojaTelefone" placeholder="Telefone ou WhatsApp">
+    <label>Instagram / site</label><input id="lojaSocial" placeholder="@instagram ou site">
+  </div>
+  <button type="button" class="primary" onclick="saveShopInfo()">Salvar informações da loja</button>
+  <button type="button" class="secondary" onclick="closeShopInfo()">Fechar</button>
+</div>
+<div class="row">
+<div><label>Empresa</label><input id="empresa" value="LUXX STORE AD"></div>
+<div><label>Subtítulo</label><input id="categoria" value="CÍLIOS • SOBRANCELHAS"></div>
+</div>
+
+<div class="row">
+<div><label>Pedido</label><input id="pedido" value="00458"></div>
+<div><label>Data</label><input id="data" type="date"></div>
+</div>
+
+<label>Cliente</label><input id="cliente" value="Maria">
+
+<h3>2. Produtos da nota</h3>
+<div class="note">Escolha um produto salvo e informe a quantidade. O preço e o total são calculados automaticamente.</div>
+<div id="products"></div>
+<button class="secondary" onclick="addProductLine()">+ Adicionar produto à nota</button>
+<h3>Leitor de QR Code</h3><div class="note">Use um leitor QR que digite como teclado ou informe o código. O estoque só baixa ao finalizar.</div>
+<div class="row"><input id="scanCode" placeholder="Escaneie ou digite o código"><button type="button" class="secondary" onclick="scanProductCode()">Adicionar pelo código</button></div>
+<button type="button" class="secondary" onclick="startCameraScan()">📷 Ler QR pela câmera</button><div id="scannerStatus" class="status"></div>
+
+<h3>4. Pagamento</h3>
+<div class="note">Pode dividir: por exemplo, R$ 20,00 em dinheiro + R$ 40,00 no PIX. Adicione quantas formas forem necessárias.</div>
+<div id="payments"></div>
+<button class="secondary" onclick="addPaymentLine()">+ Adicionar forma de pagamento</button>
+<div id="paymentStatus" class="remaining"></div>
+
+<label>Observação</label><textarea id="obs" placeholder="Observações da nota"></textarea>
+
+<div class="note">A mensagem de agradecimento será gerada automaticamente com o primeiro nome do cliente.</div>
+<button type="button" class="primary" onclick="finalizeSale()">✅ FINALIZAR COMPRA E BAIXAR ESTOQUE</button>
+
+<div class="actions">
+<button class="primary" onclick="downloadReceiptJPG()">🖨️ GERAR JPG DA NOTA</button>
+<button class="secondary" onclick="shareReceiptJPG()">📤 COMPARTILHAR JPG</button>
+</div>
+<div id="status" class="status"></div>
+</section>
+
+<section class="panel">
+<h2>Prévia exata da nota</h2>
+<div class="preview-area"><div id="printPaper" class="paper"></div></div>
+<div class="note">
+<strong>Importante:</strong> este editor não usa “Imprimir página”. Ele gera uma imagem JPG de 384 px com os dados atuais da nota. No aplicativo da impressora, selecione o JPG — nunca este arquivo HTML.
+</div>
+</section>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const products=document.getElementById('products');
+const payments=document.getElementById('payments');
+
+function esc(s){
+ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function money(n){
+ return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+}
+function dateBR(v){
+ if(!v)return '';
+ const a=v.split('-'); return a[2]+'/'+a[1]+'/'+a[0];
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+
+function getCatalog(){
+ try{const db=JSON.parse(localStorage.getItem('luxx_financeiro_v1')||'{}');return (db.products||[]).map(p=>({id:p.id,code:String(p.code||p.id),name:p.name,price:Number(p.price||0),cost:Number(p.cost||0),stock:Number(p.stock||0),category:p.category||''}));}catch(e){return []}
+}
+function setCatalog(list){
+ try{const db=JSON.parse(localStorage.getItem('luxx_financeiro_v1')||'{}');db.products=db.products||[];for(const item of list){const p=db.products.find(x=>x.id===item.id||String(x.code||x.id)===String(item.code));if(p)p.stock=Number(item.stock||0)}localStorage.setItem('luxx_financeiro_v1',JSON.stringify(db));if(location.protocol!=='file:')fetch('/api/data',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(db)}).catch(()=>{});}catch(e){console.error(e)}
+ refreshProductSelects();update();
+}
+function saveCatalogProduct(){alert('Gerencie produtos exclusivamente na página Estoque do aplicativo financeiro.');}
+function deleteCatalogProduct(id){
+ const list=getCatalog().filter(x=>x.id!==id);
+ setCatalog(list);
+}
+function editCatalogProduct(id){
+ const p=getCatalog().find(x=>x.id===id); if(!p)return;
+ document.getElementById('newCode').value=p.code;
+ document.getElementById('newName').value=p.name;
+ document.getElementById('newPrice').value=p.price;
+  document.getElementById('newStock').value=Number(p.stock||0);
+ document.getElementById('newName').focus();
+}
+function renderCatalog(){}
+function productOptions(selected){
+ const list=getCatalog();
+ return '<option value="">Selecione um produto...</option>'+
+ list.map(p=>`<option value="${esc(p.id)}" ${p.id===selected?'selected':''}>${esc(p.code)} — ${esc(p.name)} — ${money(p.price)}</option>`).join('');
+}
+function addProductLine(productId='',q=1){
+ const d=document.createElement('div');
+ d.className='product';
+ d.dataset.id=uid();
+ d.innerHTML=`
+ <label>Produto</label>
+ <select class="prodSelect">${productOptions(productId)}</select>
+ <div class="product-grid">
+   <div><label>Qtd.</label><input class="q" type="number" min="1" step="1" value="${q}"></div>
+   <div><label>Nome</label><input class="prodName" readonly></div>
+   <div><label>Preço</label><input class="prodPrice" readonly></div>
+ </div>
+ <div><label>Total do item</label><input class="prodTotal" readonly></div>
+ <button class="danger" onclick="this.parentElement.remove();update()">Remover</button>`;
+ products.appendChild(d);
+ const sel=d.querySelector('.prodSelect');
+ sel.addEventListener('change',()=>syncProductLine(d));
+ d.querySelector('.q').addEventListener('input',()=>{syncProductLine(d);update()});
+ syncProductLine(d);
+}
+function refreshProductSelects(){
+ document.querySelectorAll('.prodSelect').forEach(sel=>{
+   const current=sel.value;
+   sel.innerHTML=productOptions(current);
+ });
+ document.querySelectorAll('.product').forEach(syncProductLine);
+}
+function syncProductLine(d){
+ const p=getCatalog().find(x=>x.id===d.querySelector('.prodSelect').value);
+ const q=Math.max(1,Number(d.querySelector('.q').value||1));
+ d.querySelector('.prodName').value=p?p.name:'';
+ d.querySelector('.prodPrice').value=p?money(p.price):'';
+ d.querySelector('.prodTotal').value=p?money(p.price*q):'';
+ update();
+}
+
+function getProductRows(){
+ return [...document.querySelectorAll('.product')].map(d=>{
+   const p=getCatalog().find(x=>x.id===d.querySelector('.prodSelect').value);
+   const q=Math.max(1,Number(d.querySelector('.q').value||1));
+   return p?{code:p.code,n:p.name,p:p.price,q,total:p.price*q}:null;
+ }).filter(Boolean);
+}
+
+function addPaymentLine(method='PIX',amount=0){
+ const d=document.createElement('div');
+ d.className='payment';
+ d.innerHTML=`
+ <div class="payment-grid">
+   <div><label>Forma</label>
+     <select class="payMethod">
+       ${['Dinheiro','PIX','Cartão de débito','Cartão de crédito','Transferência','Outro'].map(x=>`<option ${x===method?'selected':''}>${x}</option>`).join('')}
+     </select>
+   </div>
+   <div><label>Valor</label><input class="payAmount" type="number" min="0" step="0.01" value="${amount||''}" placeholder="0,00"></div>
+   <button class="danger" onclick="this.closest('.payment').remove();update()">Remover</button>
+ </div>`;
+ payments.appendChild(d);
+ d.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',update));
+ update();
+}
+function getPaymentRows(){
+ return [...document.querySelectorAll('.payment')].map(d=>({
+   method:d.querySelector('.payMethod').value,
+   amount:Number(d.querySelector('.payAmount').value||0)
+ })).filter(x=>x.amount>0);
+}
+function getTotal(){
+ return getProductRows().reduce((s,x)=>s+x.total,0);
+}
+function updatePaymentStatus(){
+ const total=getTotal();
+ const paid=getPaymentRows().reduce((s,x)=>s+x.amount,0);
+ const diff=total-paid;
+ const el=document.getElementById('paymentStatus');
+ if(Math.abs(diff)<0.005){
+   el.textContent=`Pagamento completo: ${money(paid)}`;
+ }else if(diff>0){
+   el.textContent=`Falta pagar: ${money(diff)} (total ${money(total)} / pago ${money(paid)})`;
+ }else{
+   el.textContent=`Troco: ${money(Math.abs(diff))} (total ${money(total)} / pago ${money(paid)})`;
+ }
+}
+
+function update(){
+ const ps=getProductRows();
+ const paymentsRows=getPaymentRows();
+ let total=ps.reduce((s,x)=>s+x.total,0);
+
+ const shopInfo=getShopInfo();
+ let h=(localStorage.getItem("luxx_logo")?`<div class="center"><img src="${localStorage.getItem("luxx_logo")}" style="max-width:180px;max-height:65px;object-fit:contain"></div>`:"");
+ if(shopInfo.endereco)h+=`<div class="center shop-receipt-info">${esc(shopInfo.endereco)}</div>`;
+ if(shopInfo.telefone)h+=`<div class="center shop-receipt-info">${esc(shopInfo.telefone)}</div>`;
+ if(shopInfo.social)h+=`<div class="center shop-receipt-info">${esc(shopInfo.social)}</div>`;
+ h+=`<div class="center bold">${esc(empresa.value)}</div>`;
+ if(categoria.value.trim())h+=`<div class="center">${esc(categoria.value)}</div>`;
+ h+=`<div class="line"></div><div class="bold">PEDIDO Nº ${esc(pedido.value)}</div>`;
+ if(cliente.value.trim())h+=`<div>Cliente: ${esc(cliente.value)}</div>`;
+ if(data.value)h+=`<div>Data: ${dateBR(data.value)}</div>`;
+ h+=`<div class="line"></div>`;
+
+ if(!ps.length){
+   h+=`<div class="center">Nenhum produto selecionado</div>`;
+ }else{
+   ps.forEach(x=>{
+     h+=`<div class="prod"><div class="prodname">${esc(x.code)} — ${x.q}x ${esc(x.n)}</div>
+     <div class="prodbottom"><span>${money(x.p)}</span><span>${money(x.total)}</span></div></div>`;
+   });
+ }
+
+ h+=`<div class="line"></div><div class="total"><span>TOTAL:</span><span>${money(total)}</span></div>`;
+
+ if(paymentsRows.length){
+   h+=`<div style="margin-top:7px"><b>Pagamento:</b></div>`;
+   paymentsRows.forEach(x=>h+=`<div class="prodbottom"><span>${esc(x.method)}</span><span>${money(x.amount)}</span></div>`);
+   const paid=paymentsRows.reduce((s,x)=>s+x.amount,0);
+   if(paid>total+0.005) h+=`<div>Troco: ${money(paid-total)}</div>`;
+   else if(paid<total-0.005) h+=`<div>Restante: ${money(total-paid)}</div>`;
+ }else{
+   h+=`<div style="margin-top:7px">Pagamento: não informado</div>`;
+ }
+
+ if(obs.value.trim())h+=`<div class="line"></div><b>Obs.:</b><div>${esc(obs.value).replace(/\n/g,'<br>')}</div>`;
+ h+=`<div class="line"></div><div class="center">Obrigado pela preferência ${esc(firstName(cliente.value))} 😊</div>`;
+ printPaper.innerHTML=h;
+ updatePaymentStatus();
+}
+
+function setStatus(msg){document.getElementById('status').textContent=msg}
+
+function buildReceiptCanvas(){
+ update();
+
+ // Renderização preparada especificamente para a LT-8359:
+ // 384 pontos de largura / 203 DPI. Texto mais encorpado e
+ // conversão final para preto/branco puro para evitar cinza nas bordas.
+ const rows=[];
+ const W=384,pad=14,contentW=W-pad*2;
+ const font='700 20px Arial, Helvetica, sans-serif';
+ const smallFont='600 18px Arial, Helvetica, sans-serif';
+ const shopInfoFont='500 13px Arial, Helvetica, sans-serif';
+ const headFont='700 22px Arial, Helvetica, sans-serif';
+ const totalFont='700 25px Arial, Helvetica, sans-serif';
+ const lineHeight=26;
+
+ const measure=document.createElement('canvas');
+ const mctx=measure.getContext('2d');
+
+ function wrap(text,maxWidth,f){
+   mctx.font=f;
+   const words=String(text??'').split(/\s+/);
+   const lines=[]; let line='';
+   for(const word of words){
+     const test=line?line+' '+word:word;
+     if(mctx.measureText(test).width<=maxWidth || !line) line=test;
+     else { lines.push(line); line=word; }
+   }
+   if(line) lines.push(line);
+   return lines.length?lines:[''];
+ }
+ function addText(text,o={}){
+   const f=o.font||font;
+   rows.push({type:'text',lines:wrap(text,o.maxWidth||contentW,f),font:f,align:o.align||'left',spaceAfter:o.spaceAfter??5});
+ }
+ function addMulti(text,o={}){
+   String(text??'').split('\n').forEach(line=>addText(line,o));
+ }
+ function addLine(){rows.push({type:'line',spaceAfter:9});}
+
+ if(localStorage.getItem('luxx_logo')) rows.push({type:'logo',spaceAfter:5});
+ const shopInfo=getShopInfo();
+ if(shopInfo.endereco) addText(shopInfo.endereco,{font:shopInfoFont,align:'center',spaceAfter:1});
+ if(shopInfo.telefone) addText(shopInfo.telefone,{font:shopInfoFont,align:'center',spaceAfter:1});
+ if(shopInfo.social) addText(shopInfo.social,{font:shopInfoFont,align:'center',spaceAfter:2});
+ addText(empresa.value,{font:headFont,align:'center',spaceAfter:2});
+ if(categoria.value.trim()) addText(categoria.value,{font:smallFont,align:'center',spaceAfter:4});
+ addLine();
+ addText(`PEDIDO Nº ${pedido.value}`,{font:font,spaceAfter:4});
+ if(cliente.value.trim()) addText(`Cliente: ${cliente.value}`,{font:smallFont,spaceAfter:3});
+ if(data.value) addText(`Data: ${dateBR(data.value)}`,{font:smallFont,spaceAfter:4});
+ addLine();
+
+ const ps=getProductRows();
+ let total=0;
+ ps.forEach(x=>{
+   total+=x.total;
+   // Produto em linha própria, com código e quantidade bem visíveis.
+   addText(`${x.code} — ${x.q}x ${x.n}`,{font:font,spaceAfter:2});
+   rows.push({type:'pair',left:`UN. ${money(x.p)}`,right:money(x.total),font:smallFont,spaceAfter:7});
+ });
+ if(!ps.length) addText('Nenhum produto selecionado',{font:font,align:'center',spaceAfter:8});
+
+ addLine();
+ rows.push({type:'total',left:'TOTAL:',right:money(total),font:totalFont,spaceAfter:8});
+
+ const prs=getPaymentRows();
+ if(prs.length){
+   addText('PAGAMENTO:',{font:font,spaceAfter:3});
+   prs.forEach(x=>rows.push({type:'pair',left:x.method,right:money(x.amount),font:smallFont,spaceAfter:4}));
+   const paid=prs.reduce((s,x)=>s+x.amount,0);
+   if(paid>total+0.005) rows.push({type:'pair',left:'TROCO:',right:money(paid-total),font:font,spaceAfter:5});
+   else if(paid<total-0.005) rows.push({type:'pair',left:'RESTANTE:',right:money(total-paid),font:font,spaceAfter:5});
+ }else addText('PAGAMENTO: não informado',{font:font,spaceAfter:5});
+
+ if(obs.value.trim()){
+   addLine();
+   addText('OBS.:',{font:font,spaceAfter:2});
+   addMulti(obs.value,{font:smallFont,spaceAfter:2});
+ }
+ addLine();
+ addText(`Obrigado pela preferência ${firstName(cliente.value)} 😊`,{font:smallFont,align:'center',spaceAfter:2});
+
+ let H=pad;
+ rows.forEach(r=>{
+   if(r.type==='line') H+=2+r.spaceAfter;
+    else if(r.type==='logo') H+=70+r.spaceAfter;
+   else if(r.type==='pair'||r.type==='total') H+=lineHeight+r.spaceAfter;
+   else H+=r.lines.length*lineHeight+r.spaceAfter;
+ });
+ H+=pad;
+
+ const canvas=document.createElement('canvas');
+ canvas.width=W; canvas.height=Math.ceil(H);
+ const ctx=canvas.getContext('2d',{alpha:false});
+ ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,canvas.height);
+ ctx.fillStyle='#000'; ctx.textBaseline='top';
+ ctx.imageSmoothingEnabled=false;
+
+ let y=pad;
+ rows.forEach(r=>{
+   if(r.type==='logo'){
+     const im=window.luxxLogoImage;
+     if(im&&im.complete&&im.naturalWidth){const ratio=Math.min((W-pad*2)/im.naturalWidth,64/im.naturalHeight);ctx.drawImage(im,(W-im.naturalWidth*ratio)/2,y,im.naturalWidth*ratio,im.naturalHeight*ratio);}
+     y+=70+r.spaceAfter;return;
+   }
+   if(r.type==='line'){
+     // Linha um pouco mais forte para não desaparecer na impressão térmica.
+     ctx.strokeStyle='#000'; ctx.setLineDash([7,4]); ctx.lineWidth=1.5;
+     ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke(); ctx.setLineDash([]);
+     y+=2+r.spaceAfter; return;
+   }
+   if(r.type==='pair'||r.type==='total'){
+     ctx.font=r.font; ctx.textAlign='left'; ctx.fillText(r.left,pad,y);
+     ctx.textAlign='right'; ctx.fillText(r.right,W-pad,y);
+     y+=lineHeight+r.spaceAfter; return;
+   }
+   ctx.font=r.font;
+   r.lines.forEach(line=>{
+     ctx.textAlign=r.align==='center'?'center':'left';
+     ctx.fillText(line,r.align==='center'?W/2:pad,y);
+     y+=lineHeight;
+   });
+   y+=r.spaceAfter;
+ });
+
+ // Mantém as bordas suavizadas das letras. A conversão forçada para
+ // preto/branco puro removia detalhes finos e deixava o texto serrilhado.
+ return canvas;
+}
+function canvasToJPG(canvas){
+ return new Promise((resolve,reject)=>{
+   canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('JPG inválido')),'image/jpeg',0.98);
+ });
+}
+
+async function downloadReceiptJPG(){
+ try{
+   setStatus('Gerando o JPG da nota...');
+   await ensureLogoLoaded();
+   const canvas=buildReceiptCanvas();
+   const jpg=await canvasToJPG(canvas);
+   const url=URL.createObjectURL(jpg);
+   const a=document.createElement('a');
+   a.href=url;a.download=`NOTA_LUXX_${Date.now()}.jpg`;
+   document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),3000);
+   setStatus(`JPG criado: ${canvas.width} × ${canvas.height} px. Envie ESTE JPG ao app da impressora.`);
+ }catch(e){console.error(e);setStatus('Não foi possível gerar o JPG.')}
+}
+
+async function shareReceiptJPG(){
+ try{
+   setStatus('Gerando o JPG...');
+   await ensureLogoLoaded();
+   const canvas=buildReceiptCanvas();
+   const jpg=await canvasToJPG(canvas);
+   const file=new File([jpg],`NOTA_LUXX_${Date.now()}.jpg`,{type:'image/jpeg'});
+   if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+     await navigator.share({title:'Nota LUXX STORE AD',text:'Nota pronta para impressão',files:[file]});
+     setStatus('JPG enviado ao compartilhamento do Android.');
+   }else{
+     const url=URL.createObjectURL(jpg);
+     const a=document.createElement('a');a.href=url;a.download=file.name;
+     document.body.appendChild(a);a.click();a.remove();
+     setTimeout(()=>URL.revokeObjectURL(url),3000);
+     setStatus('O navegador não suporta compartilhamento de arquivo. O JPG foi salvo.');
+   }
+ }catch(e){
+   if(e && e.name==='AbortError')setStatus('Compartilhamento cancelado.');
+   else{console.error(e);setStatus('Falha ao compartilhar. Use GERAR JPG DA NOTA.')}
+ }
+}
+
+
+function firstName(full){return String(full||'').trim().split(/\s+/)[0]||'cliente';}
+let cameraStream=null;
+function scanProductCode(){
+ const code=document.getElementById('scanCode').value.trim(),status=document.getElementById('scannerStatus');
+ if(!code){status.textContent='Escaneie ou informe o código do produto.';return;}
+ const p=getCatalog().find(x=>String(x.code).toLowerCase()===code.toLowerCase());
+ if(!p){status.textContent='Produto não encontrado: '+code;return;}
+ const line=[...document.querySelectorAll('.product')].find(d=>d.querySelector('.prodSelect').value===p.id);
+ if(line){line.querySelector('.q').value=Number(line.querySelector('.q').value||1)+1;syncProductLine(line);}else addProductLine(p.id,1);
+ document.getElementById('scanCode').value='';status.textContent=p.name+' adicionado. Estoque disponível: '+Number(p.stock||0)+'.';
+}
+async function startCameraScan(){
+ const status=document.getElementById('scannerStatus');
+ if(!('BarcodeDetector' in window)){status.textContent='Este navegador não oferece leitura QR pela câmera. Use um leitor QR que digite o código no campo.';return;}
+ try{
+  cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+  let video=document.getElementById('scanVideo');if(!video){video=document.createElement('video');video.id='scanVideo';video.autoplay=true;video.playsInline=true;video.style.width='100%';status.after(video);}
+  video.srcObject=cameraStream;await video.play();const detector=new BarcodeDetector({formats:['qr_code']});status.textContent='Aponte a câmera para o QR Code.';
+  const loop=async()=>{if(!cameraStream)return;try{const codes=await detector.detect(video);if(codes.length){document.getElementById('scanCode').value=codes[0].rawValue;stopCameraScan();scanProductCode();return;}}catch(e){}requestAnimationFrame(loop);};loop();
+ }catch(e){status.textContent='Não foi possível abrir a câmera. Confira a permissão do navegador.';}
+}
+function stopCameraScan(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}}
+function finalizeSale(){
+ const rows=getProductRows();if(!rows.length){alert('Adicione pelo menos um produto.');return;}
+ const total=getTotal(),paid=getPaymentRows().reduce((a,x)=>a+x.amount,0);
+ const signature=JSON.stringify({order:document.getElementById('pedido').value,customer:document.getElementById('cliente').value,rows:rows.map(r=>({code:r.code,q:r.q}))});
+ if(localStorage.getItem('luxx_last_finalized_signature')===signature){alert('Esta mesma compra já foi finalizada. Altere o número do pedido para registrar uma nova venda.');return;}
+ if(Math.abs(total-paid)>0.005&&!confirm('O valor pago não corresponde ao total. Finalizar mesmo assim?'))return;
+ const list=getCatalog(),demand={};rows.forEach(r=>demand[r.code]=(demand[r.code]||0)+r.q);
+ for(const code of Object.keys(demand)){const p=list.find(x=>x.code===code);if(!p||Number(p.stock||0)<demand[code]){alert(`Estoque insuficiente para ${p?p.name:code}. Disponível: ${p?Number(p.stock||0):0}; solicitado: ${demand[code]}.`);return;}}
+ if(!confirm('Finalizar a compra e baixar o estoque agora?'))return;
+ for(const code of Object.keys(demand)){const p=list.find(x=>x.code===code);p.stock=Number(p.stock||0)-demand[code];}
+ setCatalog(list);localStorage.setItem('luxx_last_finalized_signature',signature);localStorage.setItem('luxx_last_sale',JSON.stringify({date:new Date().toISOString(),order:document.getElementById('pedido').value,customer:document.getElementById('cliente').value,rows,total}));
+ document.getElementById('status').textContent='Compra finalizada e estoque atualizado. Gere ou compartilhe o JPG da nota.';update();
+}
+function downloadProductQR(id){
+ const p=getCatalog().find(x=>x.id===id),box=document.getElementById('qr-'+id);if(!p||!box)return;
+ const c=box.querySelector('canvas'),im=box.querySelector('img'),url=c?c.toDataURL('image/png'):im?im.src:null;
+ if(!url){alert('QR indisponível. Confira a conexão com a internet.');return;}
+ const a=document.createElement('a');a.href=url;a.download='QR_'+p.code+'.png';a.click();
+}
+function clearLogo(){
+ try{localStorage.removeItem('luxx_logo');}catch(e){}
+ window.luxxLogoImage=null;
+ const prev=document.getElementById('logoPreview');prev.removeAttribute('src');prev.hidden=true;
+ document.getElementById('logoFile').value='';update();setStatus('Logo removida.');
+}
+function imageToCompactDataURL(file){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onerror=()=>reject(new Error('Não foi possível ler a imagem.'));
+  reader.onload=()=>{
+   const im=new Image();im.onerror=()=>reject(new Error('Formato de imagem inválido.'));
+   im.onload=()=>{
+    const maxW=700,maxH=260,scale=Math.min(1,maxW/im.naturalWidth,maxH/im.naturalHeight);
+    const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.naturalWidth*scale));c.height=Math.max(1,Math.round(im.naturalHeight*scale));
+    const cx=c.getContext('2d');
+    // PNG mantém a transparência da logo; JPG continua compacto e com fundo branco.
+    if(file.type==='image/png'){
+      cx.clearRect(0,0,c.width,c.height);cx.drawImage(im,0,0,c.width,c.height);
+      resolve(c.toDataURL('image/png'));
+    }else{
+      cx.fillStyle='#fff';cx.fillRect(0,0,c.width,c.height);cx.drawImage(im,0,0,c.width,c.height);
+      resolve(c.toDataURL('image/jpeg',0.9));
+    }
+   };im.src=reader.result;
+  };reader.readAsDataURL(file);
+ });
+}
+async function loadLogo(){
+ const data=localStorage.getItem('luxx_logo');if(!data){window.luxxLogoImage=null;return;}
+ const im=new Image();
+ await new Promise((resolve,reject)=>{im.onload=resolve;im.onerror=()=>reject(new Error('A logo salva não pôde ser carregada.'));im.src=data;});
+ window.luxxLogoImage=im;const prev=document.getElementById('logoPreview');prev.src=data;prev.hidden=false;
+}
+async function ensureLogoLoaded(){if(!window.luxxLogoImage&&localStorage.getItem('luxx_logo'))await loadLogo();}
+document.getElementById('logoFile').addEventListener('change',async e=>{
+ const f=e.target.files&&e.target.files[0];if(!f)return;
+ if(!f.type.startsWith('image/')){alert('Escolha um arquivo de imagem, como PNG ou JPG.');e.target.value='';return;}
+ if(f.size>8*1024*1024){alert('Escolha uma logo de até 8 MB.');e.target.value='';return;}
+ try{
+  setStatus('Carregando e otimizando a logo...');const data=await imageToCompactDataURL(f);
+  localStorage.setItem('luxx_logo',data);await loadLogo();update();setStatus('Logo carregada e salva neste aparelho.');
+ }catch(err){console.error(err);setStatus('Não foi possível salvar a logo. Tente uma imagem PNG ou JPG menor.');alert('A logo não carregou. Tente uma imagem PNG ou JPG menor. Se o armazenamento estiver cheio, exporte um backup e limpe os dados antigos do navegador.');}
+});
+function exportDatabase(){alert('Use Exportar dados na página Dados do aplicativo financeiro.');}
+function closeMenu(){document.getElementById('mainMenu').classList.remove('open');}
+function openProducts(){location.href='index.html';}
+function closeProducts(){}
+function closeShopInfo(){document.getElementById('shopInfoPanel').style.display='none';}
+function getShopInfo(){
+ const defaults={
+  endereco:'Rua Vigário José Inácio, 371 — 19º andar, sala 1904, Galeria do Rosário',
+  telefone:'WhatsApp: (51) 99377-5279',
+  social:''
+ };
+ try{
+  const saved=JSON.parse(localStorage.getItem('luxx_shop_info')||'{}')||{};
+  return {
+   endereco:(saved.endereco||'').trim() || defaults.endereco,
+   telefone:(saved.telefone||'').trim() || defaults.telefone,
+   social:(saved.social||'').trim() || defaults.social
+  };
+ }catch(e){return defaults}
+}
+function saveShopInfo(){
+ const info={
+  endereco:document.getElementById('lojaEndereco').value.trim(),
+  telefone:document.getElementById('lojaTelefone').value.trim(),
+  social:document.getElementById('lojaSocial').value.trim()
+ };
+ localStorage.setItem('luxx_shop_info',JSON.stringify(info));
+ update();closeShopInfo();setStatus('Informações da loja salvas e incluídas na nota.');
+}
+document.addEventListener('click',e=>{
+ const wrap=document.querySelector('.menu-wrap');
+ if(wrap&&!wrap.contains(e.target))closeMenu();
+});
+
+// Inicialização
+if(location.protocol!=='file:'){fetch('/api/data',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(x=>{if(x&&x.data){localStorage.setItem('luxx_financeiro_v1',JSON.stringify(x.data));refreshProductSelects();update();}}).catch(()=>{});}
+loadLogo().catch(()=>{});
+const today=new Date();
+data.value=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+
+document.querySelectorAll('input,select,textarea').forEach(x=>x.addEventListener('input',update));
+window.addEventListener('storage',e=>{if(e.key==='luxx_financeiro_v1'){refreshProductSelects();update();}});
+
+renderCatalog();
+addProductLine();
+addPaymentLine('PIX',0);
+update();
+</script>
+</body>
+</html>
