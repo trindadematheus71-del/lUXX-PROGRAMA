@@ -1,0 +1,28 @@
+LUXX STORE AD — PACOTE CLOUDFLARE PAGES
+
+CONTEÚDO
+- index.html: financeiro com visual BlackNoir, preto profundo e azul elétrico.
+- template.html: editor de nota com o mesmo visual futurista; o papel térmico continua branco para impressão.
+- functions/api/data.js: API inicial de leitura/gravação via Cloudflare D1.
+- schema.sql: tabela inicial do D1.
+- wrangler.toml: configuração inicial (substitua o database_id).
+
+IMPORTANTE SOBRE O ESTOQUE E QR CODE
+O template deixou de cadastrar/editar/excluir produtos. Ele lê os produtos de luxx_financeiro_v1, usados na página Estoque, pelo código do produto e baixa o estoque ao finalizar a venda. Cadastre o código/SKU de cada produto na página Estoque para que o leitor encontre o produto pelo QR. As duas páginas precisam estar no mesmo domínio/origem.
+
+PUBLICAÇÃO ESTÁTICA RÁPIDA
+1. Extraia o ZIP.
+2. No Cloudflare Pages, crie um projeto de upload de assets e envie o conteúdo da pasta (index.html deve ficar na raiz).
+3. Isso publica as páginas, mas o salvamento entre aparelhos ainda exige conectar o frontend à API D1.
+
+BANCO D1
+1. Crie um banco D1 no painel Cloudflare.
+2. Execute schema.sql no console SQL do banco.
+3. Substitua COLOQUE_AQUI_O_ID_DO_SEU_D1 no wrangler.toml pelo ID real e associe o binding DB ao projeto Pages.
+4. A API fica em /api/data. O frontend tenta sincronizar automaticamente com /api/data quando publicado no Cloudflare Pages com o binding D1 configurado; sem a configuração, continua usando localStorage como cache local.
+5. Antes de usar dados reais, proteja todo o projeto com Cloudflare Access/autenticação e configure permissões. A API não deve ficar aberta ao público.
+
+TESTE
+Abra index.html, vá em Estoque e cadastre um produto com código e quantidade. Abra Template, selecione o produto ou leia um QR cujo conteúdo seja exatamente o código/SKU. Ao finalizar a venda, o estoque compartilhado no navegador é atualizado.
+
+Nota: localStorage é específico do navegador/aparelho e não é banco online. O esquema D1 e a API estão incluídos, mas a sincronização remota depende do binding D1 correto e da proteção por Cloudflare Access; teste antes de usar dados reais.
